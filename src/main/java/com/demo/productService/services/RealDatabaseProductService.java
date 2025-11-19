@@ -72,6 +72,8 @@ public class RealDatabaseProductService implements ProductService {
 
     @Override
     public Product updateProduct(Long productId, Map<String, Object> updates) throws ProductNotFoundException {
+        System.out.println("DEBUG");
         return null;
     }
+
 }
