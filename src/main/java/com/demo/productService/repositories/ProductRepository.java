@@ -31,11 +31,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product save(Product product);
 
+    //Product saveAndInsert(Long productId, Product product);
+
     @Query(value = "select p.title, p.price from products p where p.id = 9", nativeQuery = true)
     List<ProductWithTitleAndPrice> findTitleAndPriceById();
 
 
-    @Query("SELECT p.title AS title, p.price AS price FROM Product p")
-    List<ProductWithTitleAndPrice> findTitleAndPrice();
+//    @Query("SELECT p.title AS title, p.price AS price FROM Product p")
+//    List<ProductWithTitleAndPrice> findTitleAndPrice();
 
 }

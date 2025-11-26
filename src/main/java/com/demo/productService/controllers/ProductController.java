@@ -1,5 +1,7 @@
 package com.demo.productService.controllers;
 
+import com.demo.productService.exceptions.InvalidCategoryException;
+import com.demo.productService.exceptions.InvalidProductException;
 import com.demo.productService.exceptions.ProductNotFoundException;
 import com.demo.productService.models.Product;
 import com.demo.productService.services.ProductService;
@@ -34,19 +36,23 @@ public class ProductController {
 
     }
     @PostMapping
-    public Product createProduct(@RequestBody Product product){
-        return productService.createProduct(product);
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) throws InvalidProductException, InvalidCategoryException {
+        Product savedProduct = productService.createProduct(product);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+
 
     }
 
     @PutMapping("{productId}")
-    public Product replaceProduct(@PathVariable("productId") Long productId, @RequestBody Product product){
-        return productService.replaceProduct(productId, product);
+    public ResponseEntity<Product> replaceProduct(@PathVariable("productId") Long productId, @RequestBody Product product) throws ProductNotFoundException, InvalidCategoryException {
+        Product replacedProduct = productService.replaceProduct(productId, product);
+        return new ResponseEntity<>(replacedProduct, HttpStatus.OK);
     }
 
     @DeleteMapping("{productId}")
-    public void deleteProduct(@PathVariable("productId") Long productId){
+    public String deleteProduct(@PathVariable("productId") Long productId) throws ProductNotFoundException {
         productService.deleteProduct(productId);
+        return "Product with ID " + productId + " has been deleted.";
     }
 
     @PatchMapping("{productId}")

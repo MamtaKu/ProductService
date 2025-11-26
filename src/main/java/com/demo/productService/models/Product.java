@@ -2,9 +2,13 @@ package com.demo.productService.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Objects;
+
 
 @Entity(name = "products")
 public class Product extends BaseModel {
@@ -14,6 +18,8 @@ public class Product extends BaseModel {
     @ManyToOne
     private Category category;
     private String imageUrl;
+
+
 
     public String getTitle() {
         return title;
@@ -54,4 +60,5 @@ public class Product extends BaseModel {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 }
