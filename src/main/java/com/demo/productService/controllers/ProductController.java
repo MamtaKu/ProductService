@@ -1,11 +1,10 @@
 package com.demo.productService.controllers;
 
-import com.demo.productService.exceptions.InvalidCategoryException;
-import com.demo.productService.exceptions.InvalidProductException;
-import com.demo.productService.exceptions.ProductNotFoundException;
+import com.demo.productService.exceptions.*;
 import com.demo.productService.models.Product;
 import com.demo.productService.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,15 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("{productId}")
-    public Product getSingleProduct(@PathVariable("productId") Long productId) throws ProductNotFoundException {
-        return productService.getSingleProduct(productId);
+    @GetMapping("{productId}/{tokenValue}")
+    public ResponseEntity<Product> getSingleProduct(@PathVariable("productId") Long productId, @PathVariable("tokenValue") String token) throws ProductNotFoundException, UnauthorizedAccessException, InvalidTokenException {
+        boolean b = productService.validateTokenIfAnyOtherServiceCalls(token);
+        if(b){
+            return new ResponseEntity<>(productService.getSingleProduct(productId), HttpStatus.OK);
+        }
+        else{
+            throw new UnauthorizedAccessException("Invalid token. Access denied.");
+        }
     }
 
     @GetMapping
@@ -58,6 +63,14 @@ public class ProductController {
     @PatchMapping("{productId}")
     public Product updateProduct(@PathVariable("productId") Long productId, @RequestBody Map<String, Object> updates) throws ProductNotFoundException {
        return productService.updateProduct(productId, updates);
+    }
+
+    @GetMapping("/search/{title}/{pageNumber}/{pageSize}")
+    public  Page<Product> getProductByTitle(@PathVariable("title") String title, @PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize){
+       //return  productService.getProductsByTitle(title, pageNumber, pageSize);
+        Page<Product> productsByTitle = productService.getProductsByTitle(title, pageNumber, pageSize);
+        return productsByTitle;
+
     }
 
 }

@@ -2,6 +2,10 @@ package com.demo.productService.repositories;
 
 import com.demo.productService.models.Product;
 import com.demo.productService.projections.ProductWithTitleAndPrice;
+
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,7 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByTitle(String string);
 
     //select * from Products where title like %string%;
-    List<Product> findByTitleContains(String string);
+    Page<Product> findByTitleContainsIgnoreCase(String string, Pageable pageable);
 
     //select * from products where price>=x and price <=y;
     List<Product> findByPriceBetween(Double x, Double y);

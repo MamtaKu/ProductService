@@ -1,9 +1,7 @@
 package com.demo.productService.ControllerAdvices;
 
 import com.demo.productService.ProductServiceApplication;
-import com.demo.productService.exceptions.InvalidCategoryException;
-import com.demo.productService.exceptions.InvalidProductException;
-import com.demo.productService.exceptions.ProductNotFoundException;
+import com.demo.productService.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,7 +43,26 @@ public class ProductServiceExceptionHandler {
         map.put("error", "InvalidCategoryException");
         map.put("message", invalidCategoryException.getMessage());
         map.put("status", HttpStatus.BAD_REQUEST.value());
-
         return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Map<String,Object>> UnauthorizedAccessException(UnauthorizedAccessException unauthorizedAccessException){
+        Map<String, Object> map = new HashMap<>();
+        map.put("error", "UnauthorizedAccessException");
+        map.put("message", unauthorizedAccessException.getMessage());
+        map.put("status", HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(map,HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidTokenException(InvalidTokenException invalidTokenException){
+        Map<String , Object> map = Map.of(
+                "error", "InvalidTokenException",
+                "message", invalidTokenException.getMessage(),
+                "status",401
+        );
+        return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+    }
+
+
 }

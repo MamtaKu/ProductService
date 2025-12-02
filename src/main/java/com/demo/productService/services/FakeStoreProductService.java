@@ -4,6 +4,7 @@ import com.demo.productService.dtos.FakeStoreProductDto;
 import com.demo.productService.exceptions.ProductNotFoundException;
 import com.demo.productService.models.Category;
 import com.demo.productService.models.Product;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -118,6 +119,16 @@ public class FakeStoreProductService implements ProductService {
 
         // Replace the product with updated values
         return replaceProduct(productId, existingProduct);
+    }
+
+    @Override
+    public boolean validateTokenIfAnyOtherServiceCalls(String token) {
+        return false;
+    }
+
+    @Override
+    public Page<Product> getProductsByTitle(String title, int pageNumber, int pageSize) {
+        return null;
     }
 
 }

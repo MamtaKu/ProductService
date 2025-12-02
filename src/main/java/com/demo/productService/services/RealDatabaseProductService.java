@@ -1,9 +1,8 @@
 package com.demo.productService.services;
 
 import ch.qos.logback.core.joran.spi.ConsoleTarget;
-import com.demo.productService.exceptions.InvalidCategoryException;
-import com.demo.productService.exceptions.InvalidProductException;
-import com.demo.productService.exceptions.ProductNotFoundException;
+import com.demo.productService.dtos.UserDto;
+import com.demo.productService.exceptions.*;
 import com.demo.productService.models.Category;
 import com.demo.productService.models.Product;
 import com.demo.productService.repositories.CategoryRepository;
@@ -11,8 +10,15 @@ import com.demo.productService.repositories.ProductRepository;
 import com.demo.productService.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
+import java.awt.print.Pageable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +31,12 @@ public class RealDatabaseProductService implements ProductService {
 
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
+    private RestTemplate restTemplate;
 
-    public RealDatabaseProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public RealDatabaseProductService(ProductRepository productRepository, CategoryRepository categoryRepository, RestTemplate restTemplate){
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -120,6 +128,34 @@ public class RealDatabaseProductService implements ProductService {
     public Product updateProduct(Long productId, Map<String, Object> updates) throws ProductNotFoundException {
         System.out.println("DEBUG");
         return null;
+    }
+
+
+    public boolean validateTokenIfAnyOtherServiceCalls(String tokenValue) throws InvalidTokenException {
+        String url = "http://localhost:8080/users/validateToken/" + tokenValue;
+
+        try {
+            ResponseEntity<UserDto> responseEntity = restTemplate.getForEntity(url, UserDto.class);
+            System.out.println(responseEntity);
+            UserDto body = responseEntity.getBody();
+            if (body != null) {
+                return true;
+            }
+            return false;
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 401) {
+                throw new InvalidTokenException("Token is invalid or expired");
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Page<Product> getProductsByTitle(String title, int pageNumber, int pageSize) {
+        Sort sort = Sort.by("price").descending();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        return productRepository.findByTitleContainsIgnoreCase(title, pageRequest);
+
     }
 
 }
