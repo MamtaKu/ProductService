@@ -5,6 +5,7 @@ import com.demo.productService.exceptions.ProductNotFoundException;
 import com.demo.productService.models.Category;
 import com.demo.productService.models.Product;
 import org.springframework.data.domain.Page;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,19 +16,45 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService {
 
     private final RestTemplate restTemplate;
+    //private RedisTemplate<String, Object> redisTemplate;
 
-    public FakeStoreProductService(RestTemplate restTemplate){
+
+//    public FakeStoreProductService(RestTemplate restTemplate, RedisTemplate<String, Object> redisTemplate){
+//        this.restTemplate = restTemplate;
+//        this.redisTemplate = redisTemplate;
+//    }
+
+    public FakeStoreProductService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+
     @Override
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
 
+        //first check if the product with Id is present in redis cache.
+//         Product product = (Product) redisTemplate.opsForHash().get("PRODUCTS", "PRODUCTS_" + productId);
+//
+//        if(product != null){
+//            //return from cache
+//            return product;
+//        }
+
+
+        //Cache miss - fetch from FakeStore API
         ResponseEntity<FakeStoreProductDto> forEntity = restTemplate.getForEntity("https://fakestoreapi.com/products/" + productId, FakeStoreProductDto.class);
         FakeStoreProductDto fakeStoreProductDto = forEntity.getBody();
         if(fakeStoreProductDto == null){
             throw new ProductNotFoundException(productId);
         }
+
+        //product = convertFaleStorePrductDtoToProduct(fakeStoreProductDto);
+
+        //Before returning the product, store it in redis cache
+//        redisTemplate.opsForHash().put("PRODUCTS", "PRODUCTS_"+ productId, product);
+//
+//        return product;
         return convertFaleStorePrductDtoToProduct(fakeStoreProductDto);
+
     }
 
     private Product convertFaleStorePrductDtoToProduct(FakeStoreProductDto fakeStoreProductDto){

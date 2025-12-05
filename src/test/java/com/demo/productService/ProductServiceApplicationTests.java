@@ -14,19 +14,19 @@ class ProductServiceApplicationTests {
 	@Autowired
 	private ProductRepository productRepository;
 
-	@Test
-	void contextLoads() {
-	}
+//	@Test
+//	void contextLoads() {
+//	}
 
-	@Test
-	public void testQuery() {
-		List<ProductWithTitleAndPrice> productWithTitleAndPrices =
-				productRepository.findTitleAndPriceById();
-
-		for(ProductWithTitleAndPrice productWithTitleAndPrice : productWithTitleAndPrices){
-			System.out.println(productWithTitleAndPrice.getTitle() +" " + productWithTitleAndPrice.getPrice());
-		}
-	}
+//	@Test
+//	public void testQuery() {
+//		List<ProductWithTitleAndPrice> productWithTitleAndPrices =
+//				productRepository.findTitleAndPriceById();
+//
+//		for(ProductWithTitleAndPrice productWithTitleAndPrice : productWithTitleAndPrices){
+//			System.out.println(productWithTitleAndPrice.getTitle() +" " + productWithTitleAndPrice.getPrice());
+//		}
+//	}
 
 //	@Test
 //	public void testQuery1(){

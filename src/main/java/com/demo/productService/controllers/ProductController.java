@@ -23,6 +23,12 @@ public class ProductController {
     public ProductController(@Qualifier("realDatabaseProductService") ProductService productService){
         this.productService = productService;
     }
+    @GetMapping("{productId}")
+    public ResponseEntity<Product> getSingleProductt(@PathVariable("productId") Long productId) throws ProductNotFoundException, UnauthorizedAccessException, InvalidTokenException {
+
+        return new ResponseEntity<>(productService.getSingleProduct(productId), HttpStatus.OK);
+
+    }
 
     @GetMapping("{productId}/{tokenValue}")
     public ResponseEntity<Product> getSingleProduct(@PathVariable("productId") Long productId, @PathVariable("tokenValue") String token) throws ProductNotFoundException, UnauthorizedAccessException, InvalidTokenException {
@@ -34,6 +40,7 @@ public class ProductController {
             throw new UnauthorizedAccessException("Invalid token. Access denied.");
         }
     }
+
 
     @GetMapping
     public List<Product> getAllProducts(){
